@@ -67,17 +67,16 @@ class BaseLoggingCommand(BaseCommand, ABC):
             '--log-level',
             type=str,
             choices=LEVELS_CHOICES,
-            default=self.log_level,
+            default=self.default_log_level,
             help='Nivel de logging para este comando.'
         )
         return parser
 
     def setup_logger_level(self, options):
         """Establece el nivel del logger si es diferente al actual."""
-        option_level = options.get('log_level', self.log_level).upper()
-        desired_level = getattr(logging, option_level, logging.INFO)
-        if self.logger.level != desired_level:
-            self.log_level = desired_level
+        option_level = options.get('log_level', self.default_log_level).upper()
+        self.log_level = getattr(logging, option_level, logging.INFO)
+        if self.logger.level != self.log_level:
             self.logger.setLevel(self.log_level)
 
     def execute(self, *args, **options):
