@@ -5,8 +5,6 @@ SUCCESS_LEVEL = 25
 
 
 class Logger(logging.Logger):
-    def separator(self, string='- ', length=30):
-        return string * length
 
     def success(self, message, *args, **kwargs):
         if self.isEnabledFor(SUCCESS_LEVEL):
@@ -19,3 +17,7 @@ def get_levels() -> list:
 
 logging.addLevelName(SUCCESS_LEVEL, "SUCCESS")
 logging.setLoggerClass(Logger)
+
+
+def separator(string='- ', length=30):
+    return string * length
