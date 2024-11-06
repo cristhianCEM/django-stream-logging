@@ -3,7 +3,6 @@ import colorlog
 from abc import ABC
 from django.core.management.base import BaseCommand
 from django.conf import settings
-from .utils import get_levels
 
 BASE_LOG_FORMAT = "%(log_color)s%(message)s"
 BASE_LOG_COLORS = {
@@ -15,7 +14,7 @@ BASE_LOG_COLORS = {
     'CRITICAL': 'bold_red',
     'FATAL': 'bold_red'
 }
-LEVELS_CHOICES = get_levels()
+LEVELS_CHOICES = BASE_LOG_COLORS.keys()
 
 
 class BaseLoggingCommand(BaseCommand, ABC):
