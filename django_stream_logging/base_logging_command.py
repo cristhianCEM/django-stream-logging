@@ -1,7 +1,6 @@
 import logging
 import colorlog
 from abc import ABC
-
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from . import get_levels
@@ -17,10 +16,7 @@ BASE_LOG_COLORS = {
     'FATAL': 'bold_red'
 }
 LEVELS_CHOICES = get_levels()
-if settings.DEBUG:
-    DEFAULT_LOG_LEVEL = 'DEBUG'
-else:
-    DEFAULT_LOG_LEVEL = 'INFO'
+DEFAULT_LOG_LEVEL = 'DEBUG' if settings.DEBUG else 'INFO'
 
 
 class BaseLoggingCommand(BaseCommand, ABC):
@@ -47,6 +43,8 @@ class BaseLoggingCommand(BaseCommand, ABC):
 
     def setup_logger(self):
         self.logger = self.get_logger()
+        if self.logger.hasHandlers():
+            self.logger.handlers.clear()
         self.logger.setLevel(self.log_level)
         self.logger.propagate = self.logger_propagate
         self.add_colorful_handler(self.logger)
@@ -66,11 +64,11 @@ class BaseLoggingCommand(BaseCommand, ABC):
         )
         return parser
 
-    def set_level_from_options(self, options):
+    def setup_logger_level(self, options):
         log_level = options.get('log_level', DEFAULT_LOG_LEVEL).upper()
-        log_level = getattr(logging, log_level)
+        log_level = getattr(logging, log_level, logging.NOTSET)
         self.logger.setLevel(log_level)
 
     def execute(self, *args, **options):
-        self.set_level_from_options(options)
+        self.setup_logger_level(options)
         return super().execute(*args, **options)
