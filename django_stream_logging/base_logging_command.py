@@ -22,7 +22,7 @@ DEFAULT_LOG_LEVEL = 'DEBUG' if settings.DEBUG else 'INFO'
 class BaseLoggingCommand(BaseCommand, ABC):
     logger = None
     logger_propagate = False
-    log_level = DEFAULT_LOG_LEVEL
+    default_log_level = DEFAULT_LOG_LEVEL
     log_format = BASE_LOG_FORMAT
     log_colors = BASE_LOG_COLORS
 
@@ -44,20 +44,21 @@ class BaseLoggingCommand(BaseCommand, ABC):
         handler.setFormatter(formatter)
         logger.addHandler(handler)
 
-    def setup_logger(self):
+    def setup_logger(self, level):
         """Configura el logger solo si no se ha configurado previamente."""
         if self.logger:
             return
         self.logger = self.get_logger()
         if self.logger.hasHandlers():
             self.logger.handlers.clear()
-        self.logger.setLevel(self.log_level)
+        self.logger.setLevel(level)
         self.logger.propagate = self.logger_propagate
         self.add_colorful_handler(self.logger)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setup_logger()
+        self.log_level = getattr(logging, self.default_log_level, logging.INFO)
+        self.setup_logger(self.log_level)
 
     def create_parser(self, prog_name, subcommand, **kwargs):
         """Crea el parser del comando e incluye el argumento log-level."""
@@ -74,9 +75,9 @@ class BaseLoggingCommand(BaseCommand, ABC):
     def setup_logger_level(self, options):
         """Establece el nivel del logger si es diferente al actual."""
         option_level = options.get('log_level', self.log_level).upper()
-        # Compara con el nivel actual para evitar reconfiguraciones innecesarias
-        if option_level != self.log_level:
-            self.log_level = getattr(logging, option_level, logging.INFO)
+        desired_level = getattr(logging, option_level, logging.INFO)
+        if self.logger.level != desired_level:
+            self.log_level = desired_level
             self.logger.setLevel(self.log_level)
 
     def execute(self, *args, **options):
