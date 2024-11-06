@@ -27,21 +27,25 @@ class BaseLoggingCommand(BaseCommand, ABC):
     log_colors = BASE_LOG_COLORS
 
     def get_logger(self):
+        """Obtiene el logger para la clase."""
         return logging.getLogger(__name__)
 
     def get_colorful_formatter(self):
+        """Devuelve un formateador colorido para el logger."""
         return colorlog.ColoredFormatter(
             fmt=self.log_format,
             log_colors=self.log_colors
         )
 
     def add_colorful_handler(self, logger):
+        """Añade un handler de salida colorida al logger."""
         handler = logging.StreamHandler()
         formatter = self.get_colorful_formatter()
         handler.setFormatter(formatter)
         logger.addHandler(handler)
 
     def setup_logger(self):
+        """Configura el logger solo si no se ha configurado previamente."""
         if self.logger:
             return
         self.logger = self.get_logger()
@@ -56,6 +60,7 @@ class BaseLoggingCommand(BaseCommand, ABC):
         self.setup_logger()
 
     def create_parser(self, prog_name, subcommand, **kwargs):
+        """Crea el parser del comando e incluye el argumento log-level."""
         parser = super().create_parser(prog_name, subcommand, **kwargs)
         parser.add_argument(
             '--log-level',
@@ -67,11 +72,14 @@ class BaseLoggingCommand(BaseCommand, ABC):
         return parser
 
     def setup_logger_level(self, options):
+        """Establece el nivel del logger si es diferente al actual."""
         option_level = options.get('log_level', self.log_level).upper()
+        # Compara con el nivel actual para evitar reconfiguraciones innecesarias
         if option_level != self.log_level:
             self.log_level = getattr(logging, option_level, logging.INFO)
             self.logger.setLevel(self.log_level)
 
     def execute(self, *args, **options):
+        """Ejecuta el comando asegurando que el nivel del logger esté configurado."""
         self.setup_logger_level(options)
         return super().execute(*args, **options)
