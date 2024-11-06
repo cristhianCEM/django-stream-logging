@@ -16,13 +16,22 @@ BASE_LOG_COLORS = {
     'FATAL': 'bold_red'
 }
 LEVELS_CHOICES = get_levels()
-DEFAULT_LOG_LEVEL = 'DEBUG' if settings.DEBUG else 'INFO'
 
 
 class BaseLoggingCommand(BaseCommand, ABC):
     logger = None
     logger_propagate = False
-    default_log_level = DEFAULT_LOG_LEVEL
+
+    @property
+    def default_log_level(self) -> str:
+        try:
+            if settings.DEBUG:
+                return 'DEBUG'
+            else:
+                return 'INFO'
+        except Exception:
+            return 'DEBUG'
+
     log_format = BASE_LOG_FORMAT
     log_colors = BASE_LOG_COLORS
 
