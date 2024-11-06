@@ -45,10 +45,10 @@ class BaseLoggingCommand(BaseCommand, ABC):
         logger.addHandler(handler)
 
     def set_write_methods(self, logger):
-        """Registra los métodos de escritura en el logger."""
+        """Registra los métodos de escritura en el logger, con manejo para niveles personalizados."""
         self.write_debug = logger.debug
         self.write_info = logger.info
-        self.write_success = logger.success
+        self.write_success = getattr(logger, 'success', logger.info)
         self.write_warning = logger.warning
         self.write_error = logger.error
         self.write_critical = logger.critical
