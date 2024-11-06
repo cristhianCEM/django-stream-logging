@@ -42,6 +42,8 @@ class BaseLoggingCommand(BaseCommand, ABC):
         logger.addHandler(handler)
 
     def setup_logger(self):
+        if self.logger:
+            return
         self.logger = self.get_logger()
         if self.logger.hasHandlers():
             self.logger.handlers.clear()
@@ -59,15 +61,16 @@ class BaseLoggingCommand(BaseCommand, ABC):
             '--log-level',
             type=str,
             choices=LEVELS_CHOICES,
-            default=DEFAULT_LOG_LEVEL,
+            default=self.log_level,
             help='Nivel de logging para este comando.'
         )
         return parser
 
     def setup_logger_level(self, options):
-        log_level = options.get('log_level', DEFAULT_LOG_LEVEL).upper()
-        log_level = getattr(logging, log_level, logging.NOTSET)
-        self.logger.setLevel(log_level)
+        option_level = options.get('log_level', self.log_level).upper()
+        if option_level != self.log_level:
+            self.log_level = getattr(logging, option_level, logging.INFO)
+            self.logger.setLevel(self.log_level)
 
     def execute(self, *args, **options):
         self.setup_logger_level(options)
