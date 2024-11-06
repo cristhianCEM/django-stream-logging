@@ -26,6 +26,7 @@ else:
 class BaseLoggingCommand(BaseCommand, ABC):
     logger = None
     logger_propagate = False
+    log_level = DEFAULT_LOG_LEVEL
     log_format = BASE_LOG_FORMAT
     log_colors = BASE_LOG_COLORS
 
@@ -63,6 +64,7 @@ class BaseLoggingCommand(BaseCommand, ABC):
             default=DEFAULT_LOG_LEVEL,
             help='Nivel de logging para este comando.'
         )
+        return parser
 
     def set_level_from_options(self, options):
         log_level = options.get('log_level', DEFAULT_LOG_LEVEL).upper()
