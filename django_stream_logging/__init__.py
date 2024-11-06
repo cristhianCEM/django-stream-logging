@@ -1,5 +1,6 @@
 import logging
-from .base_logging_command import BaseLoggingCommand
+from .command import BaseLoggingCommand
+from .utils import separator
 
 # Define el nivel SUCCESS en 25, entre INFO (20) y WARNING (30)
 SUCCESS_LEVEL = 25
@@ -15,21 +16,9 @@ class Logger(logging.Logger):
 
 logging.setLoggerClass(Logger)
 
-
-def get_levels() -> list:
-    """Retorna una lista de todos los niveles de logging disponibles."""
-    return [level for level in logging._levelToName.values()]
-
-
-def separator(string='- ', length=30):
-    """Genera una línea separadora repetida para efectos visuales."""
-    return string * length
-
-
 __all__ = [
     "BaseLoggingCommand",
-    "separator",
     "Logger",
     "SUCCESS_LEVEL",
-    "get_levels"
+    "separator"
 ]
