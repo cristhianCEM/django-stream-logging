@@ -44,6 +44,16 @@ class BaseLoggingCommand(BaseCommand, ABC):
         handler.setFormatter(formatter)
         logger.addHandler(handler)
 
+    def set_write_methods(self, logger):
+        """Registra los métodos de escritura en el logger."""
+        self.write_debug = logger.debug
+        self.write_info = logger.info
+        self.write_success = logger.success
+        self.write_warning = logger.warning
+        self.write_error = logger.error
+        self.write_critical = logger.critical
+        self.write_fatal = logger.critical
+
     def setup_logger(self, level):
         """Configura el logger solo si no se ha configurado previamente."""
         if self.logger:
@@ -54,6 +64,7 @@ class BaseLoggingCommand(BaseCommand, ABC):
         self.logger.setLevel(level)
         self.logger.propagate = self.logger_propagate
         self.add_colorful_handler(self.logger)
+        self.set_write_methods(self.logger)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
