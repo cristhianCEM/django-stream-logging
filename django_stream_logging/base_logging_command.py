@@ -3,7 +3,7 @@ import colorlog
 from abc import ABC
 from django.core.management.base import BaseCommand
 from django.conf import settings
-from . import get_levels
+from django_stream_logging import get_levels
 
 BASE_LOG_FORMAT = "%(log_color)s%(message)s"
 BASE_LOG_COLORS = {
