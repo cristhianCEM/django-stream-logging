@@ -57,7 +57,9 @@ class BaseLoggingCommand(BaseCommand, ABC):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Inicializa log_level usando el valor numérico de default_log_level
         self.log_level = getattr(logging, self.default_log_level, logging.INFO)
+        # Configura el logger inicialmente con el nivel definido
         self.setup_logger(self.log_level)
 
     def create_parser(self, prog_name, subcommand, **kwargs):
@@ -73,9 +75,10 @@ class BaseLoggingCommand(BaseCommand, ABC):
         return parser
 
     def setup_logger_level(self, options):
-        """Establece el nivel del logger si es diferente al actual."""
+        """Ajusta el nivel del logger según el valor de --log-level si es diferente al actual."""
         option_level = options.get('log_level', self.default_log_level).upper()
         self.log_level = getattr(logging, option_level, logging.INFO)
+        # Solo actualiza el logger si el nivel es diferente al actual
         if self.logger.level != self.log_level:
             self.logger.setLevel(self.log_level)
 
