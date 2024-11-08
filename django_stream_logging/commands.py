@@ -4,7 +4,6 @@ from django.core.management.base import BaseCommand
 from abc import ABC
 from .mixins import LoggingMixin
 
-BASE_LOG_FORMAT = "%(log_color)s%(message)s"
 BASE_LOG_COLORS = {
     'DEBUG': 'blue',
     'INFO': 'cyan',
@@ -14,18 +13,27 @@ BASE_LOG_COLORS = {
     'CRITICAL': 'bold_red',
     'FATAL': 'bold_red'
 }
+BASE_LOG_FMT = {
+    'DEBUG': '%(log_color)s%(levelname)s : %(message)s',
+    'INFO': '%(log_color)s%(message)s',
+    'SUCCESS': '%(log_color)s%(message)s',
+    'WARNING': '%(log_color)s%(levelname)s : %(message)s',
+    'ERROR': '%(log_color)s%(levelname)s : %(message)s',
+    'CRITICAL': '%(log_color)s%(levelname)s : %(message)s (%(module)s:%(lineno)d)',
+    'FATAL': '%(log_color)s%(levelname)s : %(message)s (%(module)s:%(lineno)d)',
+}
 LEVELS_CHOICES = BASE_LOG_COLORS.keys()
 
 
 class BaseLoggingCommand(BaseCommand, LoggingMixin, ABC):
 
-    log_format = BASE_LOG_FORMAT
+    log_fmt = BASE_LOG_FMT
     log_colors = BASE_LOG_COLORS
 
     def get_colorful_formatter(self):
         """Devuelve un formateador colorido para el logger."""
-        return colorlog.ColoredFormatter(
-            fmt=self.log_format,
+        return colorlog.LevelFormatter(
+            fmt=self.log_fmt,
             log_colors=self.log_colors
         )
 
