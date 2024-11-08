@@ -1,22 +1,19 @@
-from queue import Queue
 from logging import Handler
+
+END_OF_STREAM = object()
 
 
 class EventStreamHandler(Handler):
-    """Manejador de logging que utiliza una cola para enviar mensajes a través de un evento de transmisión SSE."""
+    """
+    Handler de logging que envía mensajes a través de Server-Sent Events (SSE).
+    Utiliza una cola para comunicar mensajes entre el logger y el stream.
+    """
 
-    messages_queue = None
-
-    def __init__(self, *args, **kwargs):
+    def __init__(self, queue, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.messages_queue = Queue()
+        self.messages_queue = queue
 
     def emit(self, record):
         """Formatea el mensaje y lo envía a la cola."""
         log_entry = self.format(record)
         self.messages_queue.put(log_entry)
-
-    def finish(self):
-        """Finaliza el envío de mensajes."""
-        self.messages_queue.put("Stream finalizado")
-        self.messages_queue.put(None)
