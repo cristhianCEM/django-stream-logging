@@ -64,12 +64,12 @@ class EventStreamView(View, LoggingMixin, ABC):
             self.finish_stream()
 
     def flush_stream(self):
-        """Envía los mensajes de la cola al cliente en formato SSE."""
+        """Envía los mensajes de la cola al cliente."""
         event_thread = Thread(target=self.handle_stream)
         event_thread.start()
         while True:
             try:
-                message = self.queue.get(timeout=1)
+                message = self.queue.get(timeout=0.1)
                 if message is END_OF_STREAM:
                     break
                 yield message + '\n'
