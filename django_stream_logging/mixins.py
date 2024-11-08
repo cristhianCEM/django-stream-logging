@@ -1,7 +1,6 @@
 from django.conf import settings
 import logging
 
-DEFAULT_LOG_FORMAT = "%(levelname)s : %(message)s"
 try:
     if settings.DEBUG:
         DEFAULT_LOG_LEVEL = logging.DEBUG
@@ -15,7 +14,6 @@ class LoggingMixin:
     logger = None
     logger_propagate = False
     log_level = DEFAULT_LOG_LEVEL
-    log_format = DEFAULT_LOG_FORMAT
 
     def get_logger(self):
         """Obtiene el logger para la clase."""
