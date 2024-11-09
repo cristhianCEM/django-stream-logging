@@ -15,7 +15,7 @@ setup(
     setup_requires=['wheel'],
     python_requires='>=3.10',
     license='MIT',
-    description='A Django logging handler that streams logs to the console or elsewhere.',
+    description='Django stream logging classes for views and commands.',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/cristhianCEM/django-stream-logging',
