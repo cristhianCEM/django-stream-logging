@@ -90,4 +90,7 @@ class EventStreamView(View, LoggingMixin, ABC):
 
     def get(self, request, *args, **kwargs):
         """Maneja la solicitud GET y devuelve la respuesta del stream de eventos."""
+        option_level = request.GET.get('log_level', None)
+        if option_level:
+            self.set_logger_level(option_level)
         return self.get_event_stream_response()
