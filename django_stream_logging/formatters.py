@@ -20,4 +20,4 @@ class LevelBasedFormatter(Formatter):
 
     def format(self, record: LogRecord) -> str:
         formatter = self.formatters.get(record.levelname, self.default_formatter)
-        return formatter.format(record)
+        return formatter.format(record) + '\n'

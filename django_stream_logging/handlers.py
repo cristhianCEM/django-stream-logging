@@ -1,4 +1,4 @@
-from logging import Handler
+from logging import Handler, LogRecord
 
 
 class EventStreamHandler(Handler):
@@ -11,7 +11,7 @@ class EventStreamHandler(Handler):
         super().__init__(*args, **kwargs)
         self.messages_queue = queue
 
-    def emit(self, record):
+    def emit(self, record: LogRecord):
         """Formatea el mensaje y lo envía a la cola."""
         log_entry = self.format(record)
         self.messages_queue.put(log_entry)

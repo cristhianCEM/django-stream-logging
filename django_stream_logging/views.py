@@ -73,7 +73,7 @@ class EventStreamView(View, LoggingMixin, ABC):
                 message = self.queue.get(timeout=0.1)
                 if message is END_OF_STREAM:
                     break
-                yield message + '\n'
+                yield message
             except Empty:
                 if not event_thread.is_alive():
                     break
