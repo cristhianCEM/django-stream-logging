@@ -1,7 +1,5 @@
 from logging import Handler
 
-END_OF_STREAM = object()
-
 
 class EventStreamHandler(Handler):
     """

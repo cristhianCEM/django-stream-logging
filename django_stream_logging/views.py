@@ -1,15 +1,16 @@
 from django.http import StreamingHttpResponse
 from django.views import View
-from colorlog import LevelFormatter
 from abc import ABC, abstractmethod
 from threading import Thread
 from queue import Queue, Empty
 
-from .handlers import EventStreamHandler, END_OF_STREAM
+from .handlers import EventStreamHandler
 from .mixins import LoggingMixin
+from .formatters import LevelBasedFormatter
 
 
-BASE_LOG_FMT = {
+END_OF_STREAM = object()
+DEFAULT_LOG_FMT = {
     'DEBUG': '%(levelname)s : %(message)s',
     'INFO': '%(message)s',
     'SUCCESS': '%(message)s',
@@ -26,11 +27,11 @@ class EventStreamView(View, LoggingMixin, ABC):
     Debe ser extendida e implementar el método `event_stream`.
     """
     log_handler = None
-    log_fmt = BASE_LOG_FMT
+    log_fmt = DEFAULT_LOG_FMT
 
     def get_formatter(self):
-        """Obtiene el formateador para los mensajes de log."""
-        return LevelFormatter(fmt=self.log_fmt)
+        """Obtiene un formateador que cambia el formato según el nivel de log."""
+        return LevelBasedFormatter(fmt=self.log_fmt)
 
     def add_stream_handler(self):
         self.queue = Queue()
@@ -59,12 +60,12 @@ class EventStreamView(View, LoggingMixin, ABC):
         try:
             self.event_stream()
         except Exception:
-            self.write_critical("Ha ocurrido una excepción no controlada.")
+            self.logger.critical("Ha ocurrido una excepción no controlada.")
         finally:
             self.finish_stream()
 
     def flush_stream(self):
-        """Envía los mensajes de la cola al cliente."""
+        """Envía los mensajes de la cola al cliente en formato SSE."""
         event_thread = Thread(target=self.handle_stream)
         event_thread.start()
         while True:
