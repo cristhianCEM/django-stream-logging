@@ -61,16 +61,9 @@ class BaseLoggingCommand(BaseCommand, LoggingMixin, ABC):
         )
         return parser
 
-    def set_logger_level(self, options):
-        """Ajusta el nivel del logger según el valor de --log-level si es diferente al actual."""
-        option_level = options.get('log_level')
-        if not option_level:
-            return
-        self.log_level = getattr(logging, option_level, self.log_level)
-        if self.logger.level != self.log_level:
-            self.logger.setLevel(self.log_level)
-
     def execute(self, *args, **options):
         """Ejecuta el comando asegurando que el nivel del logger esté configurado."""
-        self.set_logger_level(options)
+        option_level = options.get('log_level')
+        if option_level:
+            self.set_logger_level(option_level)
         return super().execute(*args, **options)

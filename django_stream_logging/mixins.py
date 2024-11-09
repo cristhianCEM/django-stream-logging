@@ -39,3 +39,9 @@ class LoggingMixin:
         self.logger.setLevel(self.log_level)
         self.logger.propagate = self.logger_propagate
         self.set_write_methods(self.logger)
+
+    def set_logger_level(self, level_name: str):
+        """Ajusta el nivel del logger."""
+        self.log_level = getattr(logging, level_name, self.log_level)
+        if self.logger.level != self.log_level:
+            self.logger.setLevel(self.log_level)
