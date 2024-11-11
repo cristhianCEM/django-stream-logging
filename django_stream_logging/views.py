@@ -26,19 +26,20 @@ class EventStreamView(View, LoggingMixin, ABC):
     Vista base para enviar logs en tiempo real utilizando Server-Sent Events (SSE).
     Debe ser extendida e implementar el método `event_stream`.
     """
-    log_handler = None
+    logger_handler = None
+    formatter_class = LevelBasedFormatter
     log_fmt = DEFAULT_LOG_FMT
 
     def get_formatter(self):
         """Obtiene un formateador que cambia el formato según el nivel de log."""
-        return LevelBasedFormatter(fmt=self.log_fmt)
+        return self.formatter_class(fmt=self.log_fmt)
 
     def add_stream_handler(self):
         self.queue = Queue()
-        self.log_handler = EventStreamHandler(self.queue)
+        self.logger_handler = EventStreamHandler(self.queue)
         formatter = self.get_formatter()
-        self.log_handler.setFormatter(formatter)
-        self.logger.addHandler(self.log_handler)
+        self.logger_handler.setFormatter(formatter)
+        self.logger.addHandler(self.logger_handler)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
