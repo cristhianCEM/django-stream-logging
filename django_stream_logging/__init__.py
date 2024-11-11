@@ -1,6 +1,8 @@
 import logging
 from .commands import BaseLoggingCommand
 
+__version__ = "0.2.0"
+
 # Define el nivel SUCCESS en 25, entre INFO (20) y WARNING (30)
 SUCCESS_LEVEL = 25
 logging.addLevelName(SUCCESS_LEVEL, "SUCCESS")
